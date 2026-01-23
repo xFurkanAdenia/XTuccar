@@ -26,8 +26,11 @@ item-not-have-enough-stock: "%prefix%&cMalesef ürünün bu kadar stoğu yok!"
 item-stock-added: "%prefix%&a%item% eşyasına başarıyla %amount% stok eklendi! &bYeni stok: &f%stock_newStock%"
 item-stock-not-added: "%prefix%&cStock eklenemedi!"
 
-item-price-changed: "%prefix%&a%item% eşyasısının ücreti başarıyla %price_formatted% olarak değiştirildi!"
+item-price-changed: "%prefix%&a%item_material_upper% eşyasısının ücreti başarıyla %price_formatted% olarak değiştirildi!"
 item-price-not-changed: "%prefix%&c%item% eşyasısının ücreti değiştirilemedi!"
+
+item-cancelled: "%prefix%&e%amount% &aadet &e%item% &abaşarıyla iptal edildi!"
+item-not-cancelled: "%prefix%&e%amount% &cadet &e%item% &ciptal edilemedi!"
 
 cancel: "iptal"
 cancelled: "%prefix%&cİptal edildi!"
@@ -35,7 +38,15 @@ player-item-buy-chat:
   - "&7---------------------"
   - ""
   - "&eSatın almak istediğiniz miktarı giriniz"
-  - "&cİptal etmek için: &fiptal"
+  - "&cİşlemi iptal etmek için: &fiptal"
+  - ""
+  - "&7---------------------"
+
+player-item-cancel-chat:
+  - "&7---------------------"
+  - ""
+  - "&İptal etmek istediğiniz miktarı giriniz"
+  - "&cİşlemi iptal etmek için: &fiptal"
   - ""
   - "&7---------------------"
 

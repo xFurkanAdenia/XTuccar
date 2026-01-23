@@ -12,6 +12,7 @@ import org.xfurkanadenia.xtuccar.database.TuccarDAO;
 import org.xfurkanadenia.xtuccar.model.Category;
 import org.xfurkanadenia.xtuccar.model.MarketItem;
 import org.xfurkanadenia.xtuccar.model.MarketSellingItem;
+import org.xfurkanadenia.xtuccar.model.Validator;
 import org.xfurkanadenia.xtuccar.util.Utils;
 
 import javax.annotation.Nullable;
@@ -71,6 +72,7 @@ public class TuccarManager {
         Bukkit.getScheduler().runTaskAsynchronously(XTuccar.getInstance(), () -> {
             Map<Integer, MarketSellingItem> items =  getTuccarDAO().getAllItems();
             items.forEach(cache::put);
+            items.putAll(cache.asMap());
             Bukkit.getScheduler().runTask(XTuccar.getInstance(), () -> callback.accept(items));
         });
     }
@@ -91,6 +93,10 @@ public class TuccarManager {
         Bukkit.getScheduler().runTaskAsynchronously(XTuccar.getInstance(), () -> {
             Map<Integer, MarketSellingItem> items = getTuccarDAO().getItemsBySeller(seller);
             items.forEach(cache::put);
+            cache.asMap().forEach((k, v) -> {
+                if(v.getSeller().equals(seller))
+                    items.put(k, v);
+            });
             Bukkit.getScheduler().runTask(XTuccar.getInstance(), () -> callback.accept(items));
         });
     }
@@ -236,7 +242,6 @@ public class TuccarManager {
             if (!found) {
                 found = getTuccarDAO().isPlayerSellingItem(seller, itemid);
             }
-            System.out.println(found);
             callback.accept(found);
         });
     }
@@ -337,6 +342,38 @@ public class TuccarManager {
             marketSellingItem.setPrice(price);
             callback.accept(true);
         });
+    }
+
+    public void cancelItem(String seller, String itemId, Integer amount, Consumer<Boolean> callback) {
+        XTuccar instance = XTuccar.getInstance();
+        Player player = Bukkit.getPlayer(seller);
+        MarketItem marketItem = getMarketItem(itemId);
+        if (player == null || marketItem == null) {
+            callback.accept(false);
+            return;
+        }
+        isPlayerSellingItem(seller, itemId, isSelling -> {
+            if (!isSelling) {
+                callback.accept(false);
+                return;
+            }
+            getItemBySeller(seller, itemId, marketSellingItem -> {
+                ItemStack cMarketItemStack = new ItemStack(marketItem.getItem());
+                cMarketItemStack.setAmount(amount);
+                if (!Validator.ValidateHasSpace(player, cMarketItemStack)) {
+                    callback.accept(false);
+                    return;
+                }
+                if(marketSellingItem.getAmount() < amount) {
+                    callback.accept(false);
+                    return;
+                }
+                marketSellingItem.removeAmount(amount);
+                if(marketSellingItem.getAmount() <= 0) silentRemove(marketSellingItem.getId());
+                callback.accept(true);
+            });
+        });
+
     }
 
     public List<MarketItem> getCategoryItems(Category category) {

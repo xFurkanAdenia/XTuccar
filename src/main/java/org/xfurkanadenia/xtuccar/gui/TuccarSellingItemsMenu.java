@@ -104,7 +104,7 @@ public class TuccarSellingItemsMenu extends cFastInv {
                         }
 
                         if(!Validator.ValidateStock(v, amount, p)) return;
-                        if(!Validator.ValidateHasSpace(p, v.getMarketItem().getItem(), amount)) return;
+                        if(!Validator.ValidateHasSpace(p, v.getMarketItem().getItem())) return;
                         if(!Validator.ValidateMoney(p, amount * v.getPrice())) return;
 
 
